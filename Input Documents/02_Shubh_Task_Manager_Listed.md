@@ -144,7 +144,7 @@ evidence.
 
 ## Completion Checklist
 
--   [ ] TROPOMI HCHO acquired and QA-filtered.
+-   [chcked] TROPOMI HCHO acquired and QA-filtered.
 -   [ ] MODIS/VIIRS fire data cleaned.
 -   [ ] HCHO-fire spatial-temporal alignment complete.
 -   [ ] Fire distance.
