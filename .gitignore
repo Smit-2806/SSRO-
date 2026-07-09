@@ -10,8 +10,7 @@ __pycache__/
 .env.test.local
 .env.production.local
 
-# Project Data (Gitignored as per structure)
-data/
+# data/
 
 # OS-specific
 .DS_Store
