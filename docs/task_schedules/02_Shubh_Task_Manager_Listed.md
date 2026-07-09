@@ -144,13 +144,13 @@ evidence.
 
 ## Completion Checklist
 
--   [ ] TROPOMI HCHO acquired and QA-filtered.
--   [ ] MODIS/VIIRS fire data cleaned.
--   [ ] HCHO-fire spatial-temporal alignment complete.
--   [ ] Fire distance.
--   Buffers.
--   Counts.
--   And FRP features generated.
+-   [x] TROPOMI HCHO acquired and QA-filtered.
+-   [x] MODIS/VIIRS fire data cleaned.
+-   [x] HCHO-fire spatial-temporal alignment complete.
+-   [x] Fire distance.
+-   [x] Buffers.
+-   [x] Counts.
+-   [x] And FRP features generated.
 -   [ ] Threshold-based hotspot detection complete.
 -   [ ] DBSCAN hotspot clustering complete.
 -   [ ] Fire-HCHO correlation analysis complete.
@@ -158,8 +158,8 @@ evidence.
 -   [ ] Source-attribution logic complete.
 -   [ ] Robustness and sensitivity tests complete.
 -   [ ] Final maps.
--   Tables.
--   Plots.
--   And metadata exported.
+-   [ ] Tables.
+-   [ ] Plots.
+-   [ ] And metadata exported.
 -   [ ] Scientific claims audited.
 -   [ ] Judge Q&A prepared.
