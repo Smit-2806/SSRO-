@@ -155,7 +155,7 @@ evidence.
 -   [ ] DBSCAN hotspot clustering complete.
 -   [x] Fire-HCHO correlation analysis complete.
 -   [x] Wind-transport analysis complete.
--   [ ] Source-attribution logic complete.
+-   [x] Source-attribution logic complete.
 -   [ ] Robustness and sensitivity tests complete.
 -   [ ] Final maps.
 -   [ ] Tables.
