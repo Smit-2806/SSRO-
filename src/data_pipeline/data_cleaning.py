@@ -181,6 +181,41 @@ def main():
             "data/raw/fires/punjab_delhi_fire_hcho_wind_2024.csv",
             "data/processed/punjab_delhi_fire_hcho_wind_cleaned_2024.csv"
         )
+        
+    # 4. Fuse CPCB Ground and INSAT-3D AOD Satellite Datasets (July 7 Task)
+    cpcb_cleaned_path = "data/processed/cpcb_cleaned_2024.csv"
+    aod_cleaned_path = "data/processed/insat3d_aod_cleaned_2024.csv"
+    baseline_out_path = "data/processed/aqi_cleaned_baseline_2024.csv"
+    
+    if os.path.exists(cpcb_cleaned_path) and os.path.exists(aod_cleaned_path):
+        print("\n--- Fusing Cleaned CPCB Ground Data with INSAT-3D AOD Columns ---")
+        df_cpcb = pd.read_csv(cpcb_cleaned_path)
+        df_aod = pd.read_csv(aod_cleaned_path)
+        
+        # Merge on City and date
+        df_merged = pd.merge(df_cpcb, df_aod[['City', 'date', 'insat_aod', 'qa_flag', 'solar_zenith_angle', 'satellite_zenith_angle']], on=['City', 'date'], how='left')
+        
+        # Validate pollutant range boundaries
+        df_merged['CPCB_AQI'] = df_merged['CPCB_AQI'].clip(0, 500)
+        df_merged['CPCB_PM25'] = df_merged['CPCB_PM25'].clip(0, 1000)
+        df_merged['CPCB_PM10'] = df_merged['CPCB_PM10'].clip(0, 1000)
+        df_merged['insat_aod'] = df_merged['insat_aod'].clip(0.0, 3.0)
+        
+        # Interpolate AOD and geometries, fill QA flag for cloudy days
+        df_merged['insat_aod'] = df_merged.groupby('City')['insat_aod'].transform(
+            lambda x: x.interpolate(method='linear').ffill().bfill()
+        )
+        df_merged['solar_zenith_angle'] = df_merged.groupby('City')['solar_zenith_angle'].transform(
+            lambda x: x.interpolate(method='linear').ffill().bfill()
+        )
+        df_merged['satellite_zenith_angle'] = df_merged.groupby('City')['satellite_zenith_angle'].transform(
+            lambda x: x.interpolate(method='linear').ffill().bfill()
+        )
+        df_merged['qa_flag'] = df_merged['qa_flag'].fillna(2) # 2 = Cloudy/Low Quality
+        
+        df_merged.to_csv(baseline_out_path, index=False)
+        print(f"Unified clean baseline dataset successfully saved: {baseline_out_path}")
+        print(f"Merged Shape: {df_merged.shape}. Nulls remaining: {df_merged.isnull().sum().sum()}")
 
 if __name__ == "__main__":
     main()
