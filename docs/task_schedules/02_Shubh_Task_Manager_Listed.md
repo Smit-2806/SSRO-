@@ -153,8 +153,8 @@ evidence.
 -   [x] And FRP features generated.
 -   [ ] Threshold-based hotspot detection complete.
 -   [ ] DBSCAN hotspot clustering complete.
--   [ ] Fire-HCHO correlation analysis complete.
--   [ ] Wind-transport analysis complete.
+-   [x] Fire-HCHO correlation analysis complete.
+-   [x] Wind-transport analysis complete.
 -   [ ] Source-attribution logic complete.
 -   [ ] Robustness and sensitivity tests complete.
 -   [ ] Final maps.
