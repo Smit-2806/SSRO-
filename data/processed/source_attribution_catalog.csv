@@ -1,0 +1,3 @@
+rank,cluster_id,source_type,attribution_score,mean_hcho,centroid_lat,centroid_lon,area_km2,nearest_fire_distance_km,nearest_fire_intensity_k,evidence_log
+1,0,Biomass Burning Dominated,0.0005244272631469385,0.0003343527319965,28.4,77.3,120.2399999999896,34.00530705366873,19.899993896484375,Strong spatial proximity to active agricultural burns (34.0 km) and high thermal fire intensity (19.9 K excess).
+2,1,Mixed Influence (Urban + Biomass Transport),0.00043504434124391376,0.0003372053551667,28.72,77.26,360.71999999998013,67.58599806403751,19.899993896484375,Affected by downwind transport of biomass burning precursors (nearest fire: 67.6 km) combined with local urban baseline chemistry.
