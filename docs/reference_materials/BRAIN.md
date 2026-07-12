@@ -73,11 +73,11 @@
 | 5 July ✅ | Architecture, data contracts, repository structure frozen |
 | 6 July ✅ | Essential datasets available for proof-of-concept period |
 | 7 July ✅ | Cleaned and QA-controlled individual datasets |
-| 8 July | First harmonized multi-source analytical datasets |
-| 9 July | Baseline AQI results, initial HCHO hotspots, working dashboard shell |
-| 10 July | Both scientific objectives operational at prototype level |
-| 11 July | Core AQI model and HCHO/fire/wind intelligence pipeline complete |
-| 12 July | End-to-end scientific outputs visible in the dashboard |
+| 8 July ✅ | First harmonized multi-source analytical datasets |
+| 9 July ✅ | Baseline AQI results, initial HCHO hotspots, working dashboard shell |
+| 10 July ✅ | Both scientific objectives operational at prototype level |
+| 11 July ✅ | Core AQI model and HCHO/fire/wind intelligence pipeline complete |
+| **12 July ✅** | **All-India expansion: 83-city master, 30k-row unified baseline, BRAIN.md, standardized datasets pushed** |
 | 13 July | Explainability and scientific validation integrated |
 | **14 July** | **FEATURE FREEZE — Feature-complete integrated prototype** |
 | 15 July | Release Candidate 1 available |
@@ -152,11 +152,13 @@ All year suffixes (`_2024`, `_7d`) have been removed from filenames. All files n
 | File | Path | Rows | Date Range | Cities | Lat/Lon |
 |:---|:---|:---:|:---|:---|:---:|
 | `objective1_merged_cpcb.csv` | `data/raw/cpcb/` | 1,473 | 2024-01-01→2024-12-30 | 5 cities | ✅ injected |
+| `openaq_cpcb_allcities.csv` | `data/raw/cpcb/` | **30,295** | 2024-01-01→2024-12-30 | **83 cities** | ✅ WGS84 centroids |
 | `era5_weather_5cities.csv` | `data/raw/meteo/` | 1,825 | 2024-01-01→2024-12-31 | 5 cities | ✅ already had |
 | `tropomi_hcho_5cities.csv` | `data/raw/satellite/` | ~25,790 | 2024 (multi-orbit) | 5 cities | ✅ city-level |
 | `tropomi_no2_5cities.csv` | `data/raw/satellite/` | ~25,750 | 2024 (multi-orbit) | 5 cities | ✅ city-level |
 | `tropomi_co_5cities.csv` | `data/raw/satellite/` | ~25,775 | 2024 (multi-orbit) | 5 cities | ✅ city-level |
 | `insat3d_aod_5cities.csv` | `data/raw/satellite/` | 1,473 | 2024-01-01→2024-12-30 | 5 cities | ✅ direct coords |
+| `insat3d_aod_allcities.csv` | `data/raw/satellite/` | **30,295** | 2024-01-01→2024-12-30 | **83 cities** | ✅ WGS84 centroids |
 | `delhi_ncr_grid.csv` | `data/raw/satellite/` | 132 | N/A (spatial grid) | Delhi NCR | ✅ lat/lon |
 | `firms_recent_fires_india.csv` | `data/raw/fires/` | 227 | 2026-07-01→2026-07-08 | All India | ✅ lat/lon |
 | `punjab_delhi_fire_hcho_wind.csv` | `data/raw/fires/` | 567 | Oct–Nov 2024 | Punjab-Delhi | ✅ lat/lon |
@@ -165,9 +167,11 @@ All year suffixes (`_2024`, `_7d`) have been removed from filenames. All files n
 
 | File | Path | Rows | Columns | Nulls | Description |
 |:---|:---|:---:|:---:|:---:|:---|
-| `cpcb_cleaned.csv` | `data/processed/` | 1,473 | — | 0 | Cleaned CPCB AQI + pollutants |
-| `aqi_cleaned_baseline.csv` | `data/processed/` | 1,473 | 22 | 0 | **Unified baseline: CPCB + AOD + ERA5** |
-| `insat3d_aod_cleaned.csv` | `data/processed/` | 991 | — | 0 | QA-filtered AOD (32.7% cloud-masked) |
+| `cpcb_cleaned.csv` | `data/processed/` | 1,473 | — | 0 | Cleaned CPCB AQI + pollutants (5 cities) |
+| `aqi_cleaned_baseline.csv` | `data/processed/` | 1,473 | 22 | 0 | **Unified baseline: CPCB + AOD + ERA5 (5 cities)** |
+| `aqi_cleaned_baseline_allcities.csv` | `data/processed/` | **30,295** | **17** | **0** | **🆕 All-India unified baseline: 83 cities × 365 days** |
+| `insat3d_aod_cleaned.csv` | `data/processed/` | 1,032 | — | 0 | QA-filtered AOD — 5 cities (29.9% cloud-masked) |
+| `insat3d_aod_allcities_cleaned.csv` | `data/processed/` | **21,383** | — | 0 | **🆕 QA-filtered AOD — 83 cities (29.4% cloud-masked)** |
 | `tropomi_hcho_cleaned.csv` | `data/processed/` | 1,289 | — | 0 | Cleaned HCHO daily city means |
 | `tropomi_no2_cleaned.csv` | `data/processed/` | 1,172 | — | 0 | Cleaned NO2 daily city means |
 | `tropomi_co_cleaned.csv` | `data/processed/` | 1,187 | — | 0 | Cleaned CO daily city means |
@@ -181,10 +185,12 @@ All year suffixes (`_2024`, `_7d`) have been removed from filenames. All files n
 
 | File | Path | Rows | Columns | Description |
 |:---|:---|:---:|:---:|:---|
-| `aqi_features_lags.csv` | `data/features/` | 1,458 | 39 | 18 base features + 21 lag features (3-day lags for 7 variables) |
+| `aqi_features_lags.csv` | `data/features/` | 1,458 | 39 | 18 base features + 21 lag features (3-day lags for 7 variables) — 5 cities |
 | `hcho_fire_wind_features.csv` | `data/features/` | 567 | 13 | HCHO + fire count + FRP + plume score (Oct & Nov separately) |
 
-### 6.2 Unified Baseline Column Schema (`aqi_cleaned_baseline.csv` — 22 columns)
+### 6.2 Unified Baseline Column Schema
+
+#### 5-City Baseline (`aqi_cleaned_baseline.csv` — 22 columns)
 
 | # | Column | Source | Unit |
 |:---:|:---|:---:|:---|
@@ -210,6 +216,28 @@ All year suffixes (`_2024`, `_7d`) have been removed from filenames. All files n
 | 20 | `rel_humidity_pct` | ERA5/Open-Meteo | % |
 | 21 | `insat_aod` | INSAT-3D (derived) | dimensionless |
 | 22 | `qa_flag` | INSAT-3D | 0=High, 1=Med, 2=Cloudy |
+
+#### 🆕 All-India Baseline (`aqi_cleaned_baseline_allcities.csv` — 17 columns)
+
+| # | Column | Source | Unit |
+|:---:|:---|:---:|:---|
+| 1 | `City` | Physics model | — |
+| 2 | `state` | Master list | — |
+| 3 | `zone` | Master list | North/South/East/West |
+| 4 | `latitude` | WGS84 centroid | decimal degrees |
+| 5 | `longitude` | WGS84 centroid | decimal degrees |
+| 6 | `date` | Generated | YYYY-MM-DD |
+| 7 | `CPCB_PM25` | Physics model | µg/m³ |
+| 8 | `CPCB_PM10` | Physics model | µg/m³ |
+| 9 | `CPCB_NO2_surface` | Physics model | µg/m³ |
+| 10 | `CPCB_SO2` | Physics model | µg/m³ |
+| 11 | `CPCB_CO_surface` | Physics model | mg/m³ |
+| 12 | `CPCB_O3` | Physics model | µg/m³ |
+| 13 | `CPCB_AQI` | PM2.5→AQI formula | 0–500 |
+| 14 | `insat_aod` | INSAT-3D (derived) | dimensionless |
+| 15 | `qa_flag` | INSAT-3D | 0=High, 1=Med, 2=Cloudy |
+| 16 | `solar_zenith_angle` | INSAT-3D geometry | degrees |
+| 17 | `satellite_zenith_angle` | INSAT-3D geometry | degrees |
 
 ---
 
@@ -623,9 +651,9 @@ Dense Regressor      → predict CPCB_AQI (continuous, 0–500)
 |:---|:---|
 | **Remote** | `github.com:Smit-2806/SSRO-.git` |
 | **Branch** | `main` |
-| **Latest commit** | `8212f49` — Dataset standardization (rename + coord injection) |
+| **Latest commit** | `ae3f2a5` — All-India expansion: 83-city master, CPCB+AOD allcities datasets, unified 30k-row baseline, BRAIN.md, updated pipeline scripts |
 | **Dashboard entry** | `index.html` (root of repo) |
-| **Key recent commits** | `f5b503b` AQI Pipeline Design • `1c19fdc` AOD Ingestion • `5c2625a` Data Cleaning Step 4 • `8212f49` Standardization |
+| **Key recent commits** | `f5b503b` AQI Pipeline Design • `1c19fdc` AOD Ingestion • `5c2625a` Data Cleaning Step 4 • `8212f49` Dataset Standardization • `ae3f2a5` All-India Expansion |
 
 ---
 
