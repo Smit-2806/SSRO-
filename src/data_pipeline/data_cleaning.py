@@ -30,13 +30,19 @@ def clean_cpcb_dataset(raw_path, processed_path):
     # 1. Fetch weather via Open-Meteo if there are null values
     if initial_weather_gaps := df['temp_c'].isnull().sum() > 0:
         print("  Detected missing weather values. Fetching ERA5 reanalysis from Open-Meteo...")
-        cities_coords = {
-            "Delhi": {"lat": 28.6139, "lon": 77.2090},
-            "Mumbai": {"lat": 19.0760, "lon": 72.8777},
-            "Chennai": {"lat": 13.0827, "lon": 80.2707},
-            "Bangalore": {"lat": 12.9716, "lon": 77.5946},
-            "Hyderabad": {"lat": 17.3850, "lon": 78.4867}
-        }
+        import sys
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        try:
+            from india_cities_master import INDIA_CITIES
+            cities_coords = {c["city"]: {"lat": c["lat"], "lon": c["lon"]} for c in INDIA_CITIES}
+        except ImportError:
+            cities_coords = {
+                "Delhi": {"lat": 28.6139, "lon": 77.2090},
+                "Mumbai": {"lat": 19.0760, "lon": 72.8777},
+                "Chennai": {"lat": 13.0827, "lon": 80.2707},
+                "Bangalore": {"lat": 12.9716, "lon": 77.5946},
+                "Hyderabad": {"lat": 17.3850, "lon": 78.4867}
+            }
         
         weather_by_city = {}
         for city, coords in cities_coords.items():
@@ -149,73 +155,95 @@ def clean_active_fires(raw_path, processed_path):
     print(f"  Cleaning completed. High-confidence fire points remaining: {len(df_clean)}")
     print(f"  Cleaned fires saved to: {processed_path}")
 
+def fuse_cpcb_aod(cpcb_path, aod_path, out_path, city_col="City"):
+    """Fuses a cleaned CPCB dataset with a cleaned AOD dataset into a unified baseline."""
+    if not (os.path.exists(cpcb_path) and os.path.exists(aod_path)):
+        print(f"  [Skip] Missing inputs for fusion: {cpcb_path} or {aod_path}")
+        return
+    print(f"\n--- Fusing: {os.path.basename(cpcb_path)} + {os.path.basename(aod_path)} ---")
+    df_cpcb = pd.read_csv(cpcb_path)
+    df_aod  = pd.read_csv(aod_path)
+
+    # Normalise city column name
+    if "city" in df_cpcb.columns and city_col not in df_cpcb.columns:
+        df_cpcb.rename(columns={"city": city_col}, inplace=True)
+    if "city" in df_aod.columns and city_col not in df_aod.columns:
+        df_aod.rename(columns={"city": city_col}, inplace=True)
+
+    aod_cols = [c for c in [city_col, "date", "insat_aod", "qa_flag",
+                             "solar_zenith_angle", "satellite_zenith_angle"] if c in df_aod.columns]
+    df_merged = pd.merge(df_cpcb, df_aod[aod_cols], on=[city_col, "date"], how="left")
+
+    # Range validation
+    for col, lo, hi in [("CPCB_AQI", 0, 500), ("CPCB_PM25", 0, 1000),
+                        ("CPCB_PM10", 0, 1000), ("insat_aod", 0.0, 3.0)]:
+        if col in df_merged.columns:
+            df_merged[col] = df_merged[col].clip(lo, hi)
+
+    # Interpolate satellite geometry gaps
+    for col in ["insat_aod", "solar_zenith_angle", "satellite_zenith_angle"]:
+        if col in df_merged.columns:
+            df_merged[col] = df_merged.groupby(city_col)[col].transform(
+                lambda x: x.interpolate(method="linear").ffill().bfill()
+            )
+    if "qa_flag" in df_merged.columns:
+        df_merged["qa_flag"] = df_merged["qa_flag"].fillna(2).astype(int)
+
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    df_merged.to_csv(out_path, index=False)
+    nulls = df_merged.isnull().sum().sum()
+    print(f"  ✅ {out_path}")
+    print(f"     Shape: {df_merged.shape} | Cities: {df_merged[city_col].nunique()} | Nulls: {nulls}")
+
+
 def main():
-    # 1. Clean CPCB primary dataset
+    # 1. Clean 5-city CPCB primary dataset
     clean_cpcb_dataset(
-        "data/raw/cpcb/objective1_merged_cpcb_2024.csv",
-        "data/processed/cpcb_cleaned_2024.csv"
+        "data/raw/cpcb/objective1_merged_cpcb.csv",
+        "data/processed/cpcb_cleaned.csv"
     )
-    
+
     # 2. Clean Satellite gas files
     clean_satellite_gas(
-        "data/raw/satellite/tropomi_hcho_5cities_2024.csv",
-        "data/processed/tropomi_hcho_cleaned_2024.csv"
+        "data/raw/satellite/tropomi_hcho_5cities.csv",
+        "data/processed/tropomi_hcho_cleaned.csv"
     )
     clean_satellite_gas(
-        "data/raw/satellite/tropomi_no2_5cities_2024.csv",
-        "data/processed/tropomi_no2_cleaned_2024.csv"
+        "data/raw/satellite/tropomi_no2_5cities.csv",
+        "data/processed/tropomi_no2_cleaned.csv"
     )
     clean_satellite_gas(
-        "data/raw/satellite/tropomi_co_5cities_2024.csv",
-        "data/processed/tropomi_co_cleaned_2024.csv"
+        "data/raw/satellite/tropomi_co_5cities.csv",
+        "data/processed/tropomi_co_cleaned.csv"
     )
-    
+
     # 3. Clean Active Fires
-    if os.path.exists("data/raw/fires/firms_recent_fires_india_7d.csv"):
+    if os.path.exists("data/raw/fires/firms_recent_fires_india.csv"):
         clean_active_fires(
-            "data/raw/fires/firms_recent_fires_india_7d.csv",
-            "data/processed/firms_recent_fires_cleaned_7d.csv"
+            "data/raw/fires/firms_recent_fires_india.csv",
+            "data/processed/firms_recent_fires_cleaned.csv"
         )
-    if os.path.exists("data/raw/fires/punjab_delhi_fire_hcho_wind_2024.csv"):
+    if os.path.exists("data/raw/fires/punjab_delhi_fire_hcho_wind.csv"):
         clean_active_fires(
-            "data/raw/fires/punjab_delhi_fire_hcho_wind_2024.csv",
-            "data/processed/punjab_delhi_fire_hcho_wind_cleaned_2024.csv"
+            "data/raw/fires/punjab_delhi_fire_hcho_wind.csv",
+            "data/processed/punjab_delhi_fire_hcho_wind_cleaned.csv"
         )
-        
-    # 4. Fuse CPCB Ground and INSAT-3D AOD Satellite Datasets (July 7 Task)
-    cpcb_cleaned_path = "data/processed/cpcb_cleaned_2024.csv"
-    aod_cleaned_path = "data/processed/insat3d_aod_cleaned_2024.csv"
-    baseline_out_path = "data/processed/aqi_cleaned_baseline_2024.csv"
-    
-    if os.path.exists(cpcb_cleaned_path) and os.path.exists(aod_cleaned_path):
-        print("\n--- Fusing Cleaned CPCB Ground Data with INSAT-3D AOD Columns ---")
-        df_cpcb = pd.read_csv(cpcb_cleaned_path)
-        df_aod = pd.read_csv(aod_cleaned_path)
-        
-        # Merge on City and date
-        df_merged = pd.merge(df_cpcb, df_aod[['City', 'date', 'insat_aod', 'qa_flag', 'solar_zenith_angle', 'satellite_zenith_angle']], on=['City', 'date'], how='left')
-        
-        # Validate pollutant range boundaries
-        df_merged['CPCB_AQI'] = df_merged['CPCB_AQI'].clip(0, 500)
-        df_merged['CPCB_PM25'] = df_merged['CPCB_PM25'].clip(0, 1000)
-        df_merged['CPCB_PM10'] = df_merged['CPCB_PM10'].clip(0, 1000)
-        df_merged['insat_aod'] = df_merged['insat_aod'].clip(0.0, 3.0)
-        
-        # Interpolate AOD and geometries, fill QA flag for cloudy days
-        df_merged['insat_aod'] = df_merged.groupby('City')['insat_aod'].transform(
-            lambda x: x.interpolate(method='linear').ffill().bfill()
-        )
-        df_merged['solar_zenith_angle'] = df_merged.groupby('City')['solar_zenith_angle'].transform(
-            lambda x: x.interpolate(method='linear').ffill().bfill()
-        )
-        df_merged['satellite_zenith_angle'] = df_merged.groupby('City')['satellite_zenith_angle'].transform(
-            lambda x: x.interpolate(method='linear').ffill().bfill()
-        )
-        df_merged['qa_flag'] = df_merged['qa_flag'].fillna(2) # 2 = Cloudy/Low Quality
-        
-        df_merged.to_csv(baseline_out_path, index=False)
-        print(f"Unified clean baseline dataset successfully saved: {baseline_out_path}")
-        print(f"Merged Shape: {df_merged.shape}. Nulls remaining: {df_merged.isnull().sum().sum()}")
+
+    # 4. Fuse 5-city CPCB + AOD → legacy baseline
+    fuse_cpcb_aod(
+        "data/processed/cpcb_cleaned.csv",
+        "data/processed/insat3d_aod_cleaned.csv",
+        "data/processed/aqi_cleaned_baseline.csv"
+    )
+
+    # 5. Fuse all-India CPCB + AOD → expanded baseline (NEW)
+    fuse_cpcb_aod(
+        "data/raw/cpcb/openaq_cpcb_allcities.csv",
+        "data/processed/insat3d_aod_allcities_cleaned.csv",
+        "data/processed/aqi_cleaned_baseline_allcities.csv",
+        city_col="city"
+    )
+
 
 if __name__ == "__main__":
     main()
