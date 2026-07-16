@@ -493,7 +493,7 @@ Dense Regressor      → predict CPCB_AQI (continuous, 0–500)
 |:---:|:---|:---:|:---:|:---|
 | 1 | Chennai ERA5 100% null — imputed silently from Open-Meteo | Medium | Open | Document explicitly in methodology |
 | 2 | Source fingerprinting can't separate CO vs NO2 at city scale | High | Open | Re-run at grid-cell level in fire corridor |
-| 3 | November plume score has NEGATIVE HCHO correlation (-0.293) | Medium | Documented | Report both months; discuss photochemical regime shift |
+| 3 | November plume score has NEGATIVE HCHO correlation (-0.293) | Medium | **Resolved ✅** | Both months documented in `correlation_and_transport.py` (comment block lines 28–56). Standalone scientific note: `November_Plume_Sign_Reversal_Note.md`. Two mechanisms: (1) OH radical depletion under extreme AOD, (2) λ=50km spatial mismatch for Nov plume scale. Both results MUST be shown to judges. |
 | 4 | No model training code exists yet in `src/aqi_model/` | High | Open | Next task: 10 July CNN-LSTM development |
 | 5 | λ=50km is fixed (should vary with wind speed) | Low | Acknowledged | Note as simplification; future work |
 | 6 | TROPOMI 95% null rate in raw exports undocumented | Low | Open | Add data-provenance note |

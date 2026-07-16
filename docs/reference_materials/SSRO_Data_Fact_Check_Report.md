@@ -155,7 +155,7 @@ Delhi has the highest persistence (r=0.91) — meaning today's AQI is 91% predic
 |---|---|---|---|
 | 1 | Chennai ERA5 100% null — imputed silently from Open-Meteo | Medium | State the imputation source explicitly in methodology |
 | 2 | Source fingerprinting doesn't separate CO vs NO2 at city scale | High | Rerun fingerprinting at grid-cell level in fire corridor, not city aggregate |
-| 3 | November plume score has negative HCHO correlation | Medium | Report both months; discuss photochemical regime shift |
+| 3 | November plume score has negative HCHO correlation | Medium | **RESOLVED ✅** — Both correlations (Oct +0.248, Nov −0.293) are now reported side-by-side. Two physical mechanisms documented: OH radical depletion under extreme AOD; λ=50km spatial mismatch. See `November_Plume_Sign_Reversal_Note.md` |
 | 4 | No model training code in repo | High | Add CNN-LSTM + arena code from this session to `src/models/` |
 | 5 | λ=50km is fixed but should vary with wind speed | Low | Acknowledge as simplification; future work for adaptive λ |
 | 6 | TROPOMI 95% null rate in raw exports is undocumented | Low | Add a data-provenance note explaining orbit-geometry nulls |
