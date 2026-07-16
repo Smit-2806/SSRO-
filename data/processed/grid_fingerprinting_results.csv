@@ -1,0 +1,2 @@
+analysis,n_cells,hcho_co_pearson_r,hcho_no2_pearson_r,hcho_co_p,hcho_no2_p,delta_r_CO_minus_NO2,fingerprint
+Delhi NCR Grid-Cell,132,0.8888,0.8738,0.0,0.0,0.0149,AMBIGUOUS — CO and NO2 equally correlated with HCHO at this scale
