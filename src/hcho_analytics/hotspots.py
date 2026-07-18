@@ -128,6 +128,6 @@ def run_hotspot_detection(grid_path, output_catalog_path):
 
 if __name__ == "__main__":
     run_hotspot_detection(
-        "data/processed/punjab_delhi_fire_hcho_wind_cleaned_2024.csv",
+        "data/processed/punjab_delhi_fire_hcho_wind_cleaned.csv",
         "data/processed/hcho_hotspots_catalog.csv"
     )

@@ -1,0 +1,4 @@
+model,rmse,mae,r2,pearson_r
+Ridge Regression,0.09,0.07,1.0,1.0
+Random Forest,7.06,1.75,0.9959,0.9983
+MLP Regressor,15.63,12.83,0.9798,0.9927

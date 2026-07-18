@@ -12,11 +12,13 @@ def create_lag_features(processed_path, features_path, max_lags=3):
     df = pd.read_csv(processed_path)
     df.sort_values(by=['City', 'date'], inplace=True)
     
-    # Columns to lag
+    # Columns to lag (all model input features + target)
     lag_cols = [
-        'CPCB_AQI', 'CPCB_PM25', 'CPCB_PM10', 
-        'TROPOMI_HCHO_mol_m2', 'TROPOMI_NO2_mol_m2', 
-        'temp_c', 'wind_speed_ms'
+        'CPCB_AQI', 'CPCB_PM25', 'CPCB_PM10', 'CPCB_NO2_surface', 'CPCB_SO2',
+        'CPCB_CO_surface', 'CPCB_O3', 'TROPOMI_CO_mol_m2', 'TROPOMI_HCHO_mol_m2',
+        'TROPOMI_NO2_mol_m2', 'temp_c', 'dewpoint_c', 'wind_speed_ms',
+        'pressure_hpa', 'precip_mm', 'rel_humidity_pct', 'insat_aod',
+        'latitude', 'longitude'
     ]
     
     # Create copy to append features
@@ -127,14 +129,14 @@ def compute_wind_transport_influence(grid_path, features_path, decay_rate_km=50.
 def main():
     # 1. Generate lag features for AQI model
     create_lag_features(
-        "data/processed/cpcb_cleaned_2024.csv",
+        "data/processed/aqi_cleaned_baseline.csv",
         "data/features/aqi_features_lags.csv"
     )
     
     # 2. Compute plume transport scores for HCHO
-    if os.path.exists("data/processed/punjab_delhi_fire_hcho_wind_cleaned_2024.csv"):
+    if os.path.exists("data/processed/punjab_delhi_fire_hcho_wind_cleaned.csv"):
         compute_wind_transport_influence(
-            "data/processed/punjab_delhi_fire_hcho_wind_cleaned_2024.csv",
+            "data/processed/punjab_delhi_fire_hcho_wind_cleaned.csv",
             "data/features/hcho_fire_wind_features.csv"
         )
 

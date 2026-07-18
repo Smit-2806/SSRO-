@@ -135,27 +135,27 @@ readiness.
 
 ## Completion Checklist
 
--   [ ] CPCB dataset acquired and cleaned.
--   [ ] INSAT-3D AOD acquired and QA-filtered.
--   [ ] Station-grid collocation complete.
--   [ ] Model-ready AQI table generated.
--   [ ] Lag.
--   Rolling.
--   Seasonal.
--   And meteorological features generated.
--   [ ] Baseline models benchmarked.
--   [ ] CNN-LSTM implemented.
--   [ ] CNN-LSTM + Attention implemented.
--   [ ] RMSE.
--   MAE.
--   R².
--   And Pearson R calculated.
--   [ ] Spatial and temporal holdout validation complete.
--   [ ] Explainability outputs generated.
--   [ ] Confidence/uncertainty outputs generated.
--   [ ] Final model frozen.
--   [ ] AQI maps.
--   Trends.
--   Predictions.
--   And metrics exported.
+-   [x] CPCB dataset acquired and cleaned.
+-   [x] INSAT-3D AOD acquired and QA-filtered.
+-   [x] Station-grid collocation complete.
+-   [x] Model-ready AQI table generated.
+-   [x] Lag.
+-   [x] Rolling.
+-   [x] Seasonal.
+-   [x] And meteorological features generated.
+-   [x] Baseline models benchmarked.
+-   [x] CNN-LSTM implemented.
+-   [x] CNN-LSTM + Attention implemented.
+-   [x] RMSE.
+-   [x] MAE.
+-   [x] R².
+-   [x] And Pearson R calculated.
+-   [x] Spatial and temporal holdout validation complete.
+-   [x] Explainability outputs generated.
+-   [x] Confidence/uncertainty outputs generated.
+-   [x] Final model frozen.
+-   [x] AQI maps.
+-   [x] Trends.
+-   [x] Predictions.
+-   [x] And metrics exported.
 -   [ ] Reproducibility and judge Q&A prepared.

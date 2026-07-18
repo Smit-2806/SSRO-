@@ -1,0 +1,9 @@
+{
+  "split": "test (Nov-Dec 2024)",
+  "n_samples": 247,
+  "best_epoch": 29,
+  "rmse": 20.96,
+  "mae": 10.34,
+  "r2": 0.9636,
+  "pearson_r": 0.9865
+}

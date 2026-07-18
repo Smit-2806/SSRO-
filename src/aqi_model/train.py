@@ -98,7 +98,7 @@ def train():
                                   weight_decay=CONFIG["weight_decay"])
     # halve lr if val loss plateaus for 5 epochs
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, mode="min", factor=0.5, patience=5, verbose=True
+        optimizer, mode="min", factor=0.5, patience=5
     )
 
     os.makedirs(CONFIG["model_dir"], exist_ok=True)

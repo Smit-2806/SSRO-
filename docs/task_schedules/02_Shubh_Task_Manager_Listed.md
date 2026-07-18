@@ -151,15 +151,15 @@ evidence.
 -   [x] Buffers.
 -   [x] Counts.
 -   [x] And FRP features generated.
--   [ ] Threshold-based hotspot detection complete.
--   [ ] DBSCAN hotspot clustering complete.
+-   [x] Threshold-based hotspot detection complete.
+-   [x] DBSCAN hotspot clustering complete.
 -   [x] Fire-HCHO correlation analysis complete.
 -   [x] Wind-transport analysis complete.
 -   [x] Source-attribution logic complete.
--   [ ] Robustness and sensitivity tests complete.
--   [ ] Final maps.
--   [ ] Tables.
--   [ ] Plots.
--   [ ] And metadata exported.
--   [ ] Scientific claims audited.
+-   [x] Robustness and sensitivity tests complete.
+-   [x] Final maps.
+-   [x] Tables.
+-   [x] Plots.
+-   [x] And metadata exported.
+-   [x] Scientific claims audited.
 -   [ ] Judge Q&A prepared.
