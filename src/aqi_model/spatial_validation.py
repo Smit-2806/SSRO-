@@ -50,9 +50,22 @@ def main():
                 flat = X.reshape(-1, n_f)
                 mean = flat.mean(axis=0)
                 std = flat.std(axis=0) + 1e-8
-                norm_stats = {"mean": mean, "std": std}
+                
+                # Z-score target scaling statistics
+                y_mean = y.mean()
+                y_std = y.std() + 1e-8
+                
+                norm_stats = {
+                    "mean": mean, 
+                    "std": std,
+                    "y_mean": y_mean,
+                    "y_std": y_std
+                }
             
             X = (X - norm_stats["mean"]) / norm_stats["std"]
+            
+            # Normalise y using target scaling stats
+            y_norm = (y - norm_stats["y_mean"]) / norm_stats["y_std"]
             
             class SimpleDataset(Dataset):
                 def __init__(self, X_t, y_t):
@@ -61,7 +74,7 @@ def main():
                 def __len__(self): return len(self.y)
                 def __getitem__(self, idx): return self.X[idx], self.y[idx]
                 
-            return SimpleDataset(X, y), norm_stats
+            return SimpleDataset(X, y_norm), norm_stats
             
         train_ds, norm_stats = create_loco_dataset(train_df)
         test_ds, _ = create_loco_dataset(test_df, norm_stats)
@@ -74,8 +87,8 @@ def main():
         criterion = nn.MSELoss()
         optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
         
-        # fast training: 10 epochs for validation test
-        for epoch in range(10):
+        # fast training: 20 epochs for validation test
+        for epoch in range(20):
             model.train()
             for X, y in train_loader:
                 X, y = X.to(device), y.to(device)
@@ -84,8 +97,12 @@ def main():
                 loss.backward()
                 optimizer.step()
                 
-        # evaluate
-        _, preds, trues = evaluate(model, test_loader, criterion, device)
+        # evaluate and denormalise
+        _, preds_norm, trues_norm = evaluate(model, test_loader, criterion, device)
+        
+        preds = preds_norm * norm_stats["y_std"] + norm_stats["y_mean"]
+        trues = trues_norm * norm_stats["y_std"] + norm_stats["y_mean"]
+        
         m = compute_metrics(trues, preds)
         print(f"  Holdout {holdout_city} Results: RMSE: {m['rmse']:.2f} | R2: {m['r2']:.4f}")
         loco_results.append({"holdout_city": holdout_city, **m})
