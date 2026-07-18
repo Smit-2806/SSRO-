@@ -651,9 +651,9 @@ Dense Regressor      → predict CPCB_AQI (continuous, 0–500)
 |:---|:---|
 | **Remote** | `github.com:Smit-2806/SSRO-.git` |
 | **Branch** | `main` |
-| **Latest commit** | `ae3f2a5` — All-India expansion: 83-city master, CPCB+AOD allcities datasets, unified 30k-row baseline, BRAIN.md, updated pipeline scripts |
+| **Latest commit** | `af3890f` — Fix Delhi LOCO validation scale bias using Z-score target scaling; walkthrough & QA narrative generated |
 | **Dashboard entry** | `index.html` (root of repo) |
-| **Key recent commits** | `f5b503b` AQI Pipeline Design • `1c19fdc` AOD Ingestion • `5c2625a` Data Cleaning Step 4 • `8212f49` Dataset Standardization • `ae3f2a5` All-India Expansion |
+| **Key recent commits** | `fb1b193` CNN-LSTM Refactor • `03c8dca` Baseline comparison, spatial validation, explainability, DBSCAN robustness tests • `af3890f` Z-score Target Scaling fix |
 
 ---
 
